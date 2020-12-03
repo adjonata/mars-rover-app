@@ -1,6 +1,4 @@
-const { create } = require("../models/manifests.model");
 const Manifests = require("../models/manifests.model");
-const { parseISO } = require("date-fns");
 
 module.exports = {
   async index(req, res) {
@@ -9,12 +7,9 @@ module.exports = {
     return res.json(manifests);
   },
   async find(req, res) {
-    const { date } = req.params;
+    const { date: earth_date } = req.params;
 
-    const iso = parseISO(date);
-    console.log(iso);
-
-    const manifest = await Manifests.findOne({ earth_date: date });
+    const manifest = await Manifests.findOne({ earth_date });
 
     return res.json(manifest);
   },
