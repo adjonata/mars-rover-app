@@ -9,10 +9,24 @@ module.exports = {
   async find(req, res) {
     const { date: earth_date } = req.params;
 
-    const manifest = await Manifests.findOne({ earth_date });
+    return await Manifests.findOne({ earth_date })
+      .then(resAPI => {
+        const limit = process.env.QUERY_DATE_LIMIT;
 
-    return res.json(manifest);
+        const total_pages = Math.ceil(resAPI.total_photos / limit);
+
+        const { cameras, sol, total_photos } = resAPI;
+        
+        return res.json({
+          sol,
+          cameras,
+          total_photos,
+          total_pages
+        });
+      })
+      .catch(errorAPI => res.json(errorAPI));
   },
+
   async create(req, res) {
     const { sol, earth_date, total_photos, cameras } = req.body;
 
