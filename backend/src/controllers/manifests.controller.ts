@@ -13,7 +13,7 @@ export default {
 
     return await Manifests.findOne({ earth_date })
       .then(resAPI => {
-        if (!resAPI) return;
+        if (!resAPI) return res.status(400).json({ message: 'Has no images that day :('});
 
         const limit: number = 424;
         let total_pages: number = 0;

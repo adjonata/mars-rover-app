@@ -64,7 +64,7 @@ exports.default = {
                         return [4 /*yield*/, manifests_model_1.default.findOne({ earth_date: earth_date })
                                 .then(function (resAPI) {
                                 if (!resAPI)
-                                    return;
+                                    return res.status(400).json({ message: 'Has no images that day :(' });
                                 var limit = 424;
                                 var total_pages = 0;
                                 if (resAPI.total_photos) {
