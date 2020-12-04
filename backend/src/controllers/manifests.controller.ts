@@ -15,10 +15,7 @@ export default {
       .then(resAPI => {
         if (!resAPI) return;
 
-        const limit: number = parseInt(
-          `${process.env.QUERY_DATE_LIMIT}` || "1"
-        );
-
+        const limit: number = 424;
         let total_pages: number = 0;
 
         if (resAPI.total_photos) {

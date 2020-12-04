@@ -65,7 +65,7 @@ exports.default = {
                                 .then(function (resAPI) {
                                 if (!resAPI)
                                     return;
-                                var limit = parseInt("" + process.env.QUERY_DATE_LIMIT || "1");
+                                var limit = 424;
                                 var total_pages = 0;
                                 if (resAPI.total_photos) {
                                     total_pages = Math.ceil(resAPI.total_photos / limit);
