@@ -1,0 +1,45 @@
+/*** VARIABLES SCSS ***/
+
+/* --- COLORS --- */
+$colors: (
+  "white": "#fafafa",
+  "black": "#1a1a1a",
+  "mars": "#a63b0a"
+);
+
+@each $key, $c in $colors {
+  .bg-#{$key} {
+    background-color: #{$c};
+  }
+  .text-#{$key} {
+    color: #{$c};
+  }
+}
+
+/* --- RADIUS --- */
+$radius: (
+  "1": "3px",
+  "2": "6px",
+  "3": "9px",
+  "4": "12px",
+  "5": "15px",
+  "full": "50%"
+);
+
+@each $key, $r in $radius {
+  .radius-#{$key} {
+    border-radius: #{$r};
+  }
+}
+
+/* --- SHADOW --- */
+$shadows: (
+  "sm": "rgba(0, 0, 0, 0.075) 0px 2px 4px 0px",
+);
+
+
+@each $key, $s in $shadows {
+  .shadow-#{$key} {
+    box-shadow: #{$s};
+  }
+}
