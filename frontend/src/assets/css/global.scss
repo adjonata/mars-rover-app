@@ -1,0 +1,27 @@
+/* Width and Height Class */
+@for $i from 1 through 100 {
+  .w-#{$i} {
+    width: #{$i + '%'};
+  }
+  .h-#{$i} {
+    height: #{$i + '%'};
+  }
+}
+
+/* Vue Notification */
+.vue-notification {
+  margin-top: 5px !important;
+}
+
+body {
+  background: #161616;
+}
+
+.clickable {
+  cursor: pointer;
+  transition: filter 0.3s;
+
+  &:hover {
+    filter: brightness(92%);
+  }
+}
