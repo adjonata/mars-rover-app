@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from "axios";
 
 const api = axios.create({
   baseURL: "https://api.nasa.gov/mars-photos/api/v1",
@@ -7,4 +7,4 @@ const api = axios.create({
   }
 });
 
-module.exports = api;
+export default api;
