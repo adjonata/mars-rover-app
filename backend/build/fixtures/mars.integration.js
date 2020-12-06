@@ -41,6 +41,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var marsApi_service_1 = __importDefault(require("../services/marsApi.service"));
 var manifests_model_1 = __importDefault(require("../models/manifests.model"));
+var photos_model_1 = __importDefault(require("../models/photos.model"));
+var date_fns_1 = require("date-fns");
 exports.default = {
     sync_manifests: function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
@@ -127,23 +129,153 @@ exports.default = {
     },
     sync_photos: function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var minDate, maxDate, photosAdded, miliseconds, counter;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var _a, minDate, maxDate, totalPhotos, photosAdded, miliseconds, counter;
+            var _this = this;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
-                        minDate = "";
-                        maxDate = "";
-                        if ("minDate" in req.params)
-                            minDate = String(req.params.minDate);
-                        if ("maxDate" in req.params)
-                            maxDate = String(req.params.maxDate);
-                        photosAdded = 0;
+                        _a = req.body, minDate = _a.minDate, maxDate = _a.maxDate;
+                        if (!minDate || !maxDate) {
+                            return [2 /*return*/, res.status(400).json({ message: "Invalid period." })];
+                        }
+                        minDate = date_fns_1.parseISO(String(minDate));
+                        maxDate = date_fns_1.parseISO(String(maxDate));
+                        if (date_fns_1.differenceInDays(maxDate, minDate) > 365) {
+                            return [2 /*return*/, res.status(400).json({
+                                    message: "The maximum period is 1 year.",
+                                })];
+                        }
+                        totalPhotos = 0;
+                        photosAdded = [];
                         miliseconds = 0;
                         counter = setInterval(function () {
                             miliseconds++;
                         }, 100);
-                        return [4 /*yield*/, manifests_model_1.default.find()];
-                    case 1: return [2 /*return*/, _a.sent()];
+                        return [4 /*yield*/, manifests_model_1.default.find()
+                                .where("earth_date")
+                                .gt(minDate)
+                                .lt(maxDate)
+                                .then(function (resMan) { return __awaiter(_this, void 0, void 0, function () {
+                                var _this = this;
+                                return __generator(this, function (_a) {
+                                    return [2 /*return*/, new Promise(function (resolve, reject) {
+                                            resMan.map(function (man) { return __awaiter(_this, void 0, void 0, function () {
+                                                var _this = this;
+                                                return __generator(this, function (_a) {
+                                                    switch (_a.label) {
+                                                        case 0: return [4 /*yield*/, marsApi_service_1.default.get("/rovers/curiosity/photos", {
+                                                                params: {
+                                                                    sol: man.sol,
+                                                                },
+                                                            })
+                                                                .then(function (_a) {
+                                                                var data = _a.data;
+                                                                return __awaiter(_this, void 0, void 0, function () {
+                                                                    var photos, _loop_2, _i, photos_2, photo;
+                                                                    var _this = this;
+                                                                    return __generator(this, function (_b) {
+                                                                        switch (_b.label) {
+                                                                            case 0:
+                                                                                photos = data.photos;
+                                                                                if (!photos || photos.length < 1) {
+                                                                                    return [2 /*return*/, reject(res.status(400).json({
+                                                                                            message: "There are no photos in this period.",
+                                                                                        }))];
+                                                                                }
+                                                                                _loop_2 = function (photo) {
+                                                                                    return __generator(this, function (_a) {
+                                                                                        switch (_a.label) {
+                                                                                            case 0: return [4 /*yield*/, photos_model_1.default.findOne({ id_base: photo.id })
+                                                                                                    .then(function (resPhotos) { return __awaiter(_this, void 0, void 0, function () {
+                                                                                                    var camera, src, toCreate;
+                                                                                                    return __generator(this, function (_a) {
+                                                                                                        switch (_a.label) {
+                                                                                                            case 0:
+                                                                                                                if (!!resPhotos) return [3 /*break*/, 2];
+                                                                                                                camera = photo.camera.name;
+                                                                                                                src = photo.img_src.split("msl-raw-images/")[1];
+                                                                                                                toCreate = {
+                                                                                                                    id_base: photo.id,
+                                                                                                                    earth_date: photo.earth_date,
+                                                                                                                    camera: camera,
+                                                                                                                    src: src,
+                                                                                                                };
+                                                                                                                return [4 /*yield*/, photos_model_1.default.create(toCreate)
+                                                                                                                        .then(function () {
+                                                                                                                        totalPhotos++;
+                                                                                                                        photosAdded.push(photo.id);
+                                                                                                                    })
+                                                                                                                        .catch(function (errorCreate) {
+                                                                                                                        var messageSyc = "Error in creating imageId " + photo.id + ".";
+                                                                                                                        console.log(messageSyc);
+                                                                                                                        return reject(res.status(500).json({
+                                                                                                                            messageSyc: messageSyc,
+                                                                                                                            errorCreate: errorCreate,
+                                                                                                                        }));
+                                                                                                                    })];
+                                                                                                            case 1:
+                                                                                                                _a.sent();
+                                                                                                                return [3 /*break*/, 3];
+                                                                                                            case 2: return [2 /*return*/];
+                                                                                                            case 3: return [2 /*return*/];
+                                                                                                        }
+                                                                                                    });
+                                                                                                }); })
+                                                                                                    .catch(function (errorPhotos) {
+                                                                                                    console.log(errorPhotos);
+                                                                                                    return reject(res.status(500).json(errorPhotos));
+                                                                                                })];
+                                                                                            case 1:
+                                                                                                _a.sent();
+                                                                                                return [2 /*return*/];
+                                                                                        }
+                                                                                    });
+                                                                                };
+                                                                                _i = 0, photos_2 = photos;
+                                                                                _b.label = 1;
+                                                                            case 1:
+                                                                                if (!(_i < photos_2.length)) return [3 /*break*/, 4];
+                                                                                photo = photos_2[_i];
+                                                                                return [5 /*yield**/, _loop_2(photo)];
+                                                                            case 2:
+                                                                                _b.sent();
+                                                                                _b.label = 3;
+                                                                            case 3:
+                                                                                _i++;
+                                                                                return [3 /*break*/, 1];
+                                                                            case 4: return [2 /*return*/];
+                                                                        }
+                                                                    });
+                                                                });
+                                                            })
+                                                                .catch(function (errorMars) {
+                                                                var message = "Synchronization error: get sol " + man.sol + ".";
+                                                                console.log(message);
+                                                                return reject(res.status(500).json({
+                                                                    message: message,
+                                                                    errorMars: errorMars,
+                                                                }));
+                                                            })
+                                                                .finally(function () {
+                                                                clearInterval(counter);
+                                                                var success = {
+                                                                    timing: miliseconds / 10 + " seconds",
+                                                                    totalPhotos: totalPhotos,
+                                                                    photosAdded: photosAdded,
+                                                                };
+                                                                return resolve(res.status(200).json(success));
+                                                            })];
+                                                        case 1:
+                                                            _a.sent();
+                                                            return [2 /*return*/];
+                                                    }
+                                                });
+                                            }); });
+                                        })];
+                                });
+                            }); })
+                                .catch(function (errorMan) { return res.status(500).json(errorMan); })];
+                    case 1: return [2 /*return*/, _b.sent()];
                 }
             });
         });

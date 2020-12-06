@@ -26,4 +26,4 @@ var Photos = new mongoose_1.Schema({
     camera: mongoose_1.Schema.Types.String,
     src: String,
 });
-exports.default = mongoose_1.default.model("Manifests", Photos);
+exports.default = mongoose_1.default.model("Photos", Photos);
