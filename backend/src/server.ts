@@ -1,4 +1,6 @@
-import "dotenv/config";
+import * as dotenv from "dotenv";
+dotenv.config({ path: __dirname+'/../.env' });
+
 import app from "./app";
 import mongoose, { CallbackError } from "mongoose";
 
