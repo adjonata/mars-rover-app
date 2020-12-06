@@ -56,47 +56,96 @@ exports.default = {
                         }, 100);
                         return [4 /*yield*/, marsApi_service_1.default.get("/manifests/curiosity")
                                 .then(function (resAPI) { return __awaiter(_this, void 0, void 0, function () {
-                                var data, allManifests, fillManisfets, photos, _i, photos_1, manifest;
+                                var photos, allManifests, solsList, _loop_1, _i, photos_1, manifest, responseObject;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
                                         case 0:
-                                            data = resAPI.data;
+                                            photos = resAPI.data.photo_manifest.photos;
+                                            if (!photos)
+                                                return [2 /*return*/, res.status(400).json({
+                                                        message: "No photos in response.",
+                                                    })];
                                             return [4 /*yield*/, manifests_model_1.default.find()];
                                         case 1:
                                             allManifests = _a.sent();
-                                            fillManisfets = allManifests.map(function (m) { return m.sol; });
-                                            photos = data.photo_manifest.photos;
+                                            solsList = allManifests.map(function (m) { return m.sol; });
+                                            _loop_1 = function (manifest) {
+                                                return __generator(this, function (_a) {
+                                                    switch (_a.label) {
+                                                        case 0:
+                                                            if (!solsList.includes(manifest.sol)) return [3 /*break*/, 1];
+                                                            return [2 /*return*/, "continue"];
+                                                        case 1: return [4 /*yield*/, manifests_model_1.default.create(manifest)
+                                                                .then(function (resMan) {
+                                                                console.log("Synchronization: Day " + resMan.earth_date + " added.");
+                                                                daysAdded.push(resMan.earth_date);
+                                                            })
+                                                                .catch(function (errorMan) {
+                                                                var message = "Synchronization error in sol " + manifest.sol + "!";
+                                                                console.log(message);
+                                                                return res.status(500).json({
+                                                                    message: message,
+                                                                    details: errorMan,
+                                                                });
+                                                            })];
+                                                        case 2:
+                                                            _a.sent();
+                                                            _a.label = 3;
+                                                        case 3: return [2 /*return*/];
+                                                    }
+                                                });
+                                            };
                                             _i = 0, photos_1 = photos;
                                             _a.label = 2;
                                         case 2:
-                                            if (!(_i < photos_1.length)) return [3 /*break*/, 6];
+                                            if (!(_i < photos_1.length)) return [3 /*break*/, 5];
                                             manifest = photos_1[_i];
-                                            if (!fillManisfets.includes(manifest.sol)) return [3 /*break*/, 3];
-                                            return [3 /*break*/, 5];
-                                        case 3: return [4 /*yield*/, manifests_model_1.default.create(manifest).then(function (resMan) {
-                                                console.log("Synchronization: Day " + resMan.earth_date + " added.");
-                                                daysAdded.push(resMan.earth_date);
-                                            })];
-                                        case 4:
+                                            return [5 /*yield**/, _loop_1(manifest)];
+                                        case 3:
                                             _a.sent();
-                                            _a.label = 5;
-                                        case 5:
+                                            _a.label = 4;
+                                        case 4:
                                             _i++;
                                             return [3 /*break*/, 2];
-                                        case 6:
+                                        case 5:
                                             clearInterval(counter);
-                                            return [2 /*return*/, res.json({
-                                                    synchronizationTime: miliseconds / 10 + " ms",
-                                                    totalAdded: daysAdded.length,
-                                                    daysAdded: daysAdded
-                                                })];
+                                            responseObject = {
+                                                timing: miliseconds / 10 + " seconds",
+                                                totalAdded: daysAdded.length,
+                                                daysAdded: daysAdded,
+                                            };
+                                            return [2 /*return*/, res.json(responseObject)];
                                     }
                                 });
                             }); })
-                                .catch(function (errorAPI) { return res.json(errorAPI); })];
+                                .catch(function (errorAPI) { return res.json(errorAPI); })
+                                .finally(function () { return clearInterval(counter); })];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
-    }
+    },
+    sync_photos: function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var minDate, maxDate, photosAdded, miliseconds, counter;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        minDate = "";
+                        maxDate = "";
+                        if ("minDate" in req.params)
+                            minDate = String(req.params.minDate);
+                        if ("maxDate" in req.params)
+                            maxDate = String(req.params.maxDate);
+                        photosAdded = 0;
+                        miliseconds = 0;
+                        counter = setInterval(function () {
+                            miliseconds++;
+                        }, 100);
+                        return [4 /*yield*/, manifests_model_1.default.find()];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    },
 };

@@ -18,29 +18,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var dotenv = __importStar(require("dotenv"));
-dotenv.config({ path: __dirname + '/../.env' });
-var app_1 = __importDefault(require("./app"));
-var mongoose_1 = __importDefault(require("mongoose"));
-var port = 3333;
-if (process.env.NODE_ENV === 'production') {
-    port = parseInt("" + process.env.PRODUCTION_PORT);
-}
-mongoose_1.default.set("useCreateIndex", true);
-mongoose_1.default
-    .connect(process.env.CONNECTION, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-    .then(function () {
-    app_1.default.listen(port, function () {
-        console.log("Application running on port " + port);
-    });
-})
-    .catch(function (error) {
-    console.log(error);
+var mongoose_1 = __importStar(require("mongoose"));
+var Photos = new mongoose_1.Schema({
+    id_base: mongoose_1.Schema.Types.Number,
+    earth_date: mongoose_1.Schema.Types.Date,
+    camera: mongoose_1.Schema.Types.String,
+    src: String,
 });
+exports.default = mongoose_1.default.model("Manifests", Photos);

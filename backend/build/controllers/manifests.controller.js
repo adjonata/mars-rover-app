@@ -41,41 +41,77 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var manifests_model_1 = __importDefault(require("../models/manifests.model"));
 exports.default = {
-    index: function (req, res) {
+    getAllManifests: function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var manifests;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, manifests_model_1.default.find()];
-                    case 1:
-                        manifests = _a.sent();
-                        return [2 /*return*/, res.json(manifests)];
+                    case 0: return [4 /*yield*/, manifests_model_1.default.find()
+                            .then(function (resAPI) {
+                            return res.status(200).json(resAPI);
+                        })
+                            .catch(function (errorAPI) {
+                            return res.status(500).json(errorAPI);
+                        })];
+                    case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     },
-    find: function (req, res) {
+    findByCams: function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var earth_date;
+            var cameras;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        cameras = req.body.cameras;
+                        if (!cameras || cameras.length < 1) {
+                            return [2 /*return*/, res.status(400).json({
+                                    message: "No cameras chosen",
+                                })];
+                        }
+                        return [4 /*yield*/, manifests_model_1.default.find({ cameras: { $all: cameras } })
+                                .then(function (resMan) { return res.status(200).json(resMan); })
+                                .catch(function (errorMan) { return res.status(400).json({ errorMan: errorMan }); })];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    },
+    findOneManifest: function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            var earth_date, sol, query;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         earth_date = req.params.date;
-                        return [4 /*yield*/, manifests_model_1.default.findOne({ earth_date: earth_date })
+                        sol = parseInt(req.params.sol);
+                        if (!earth_date && !sol) {
+                            return [2 /*return*/, res.status(401).json({
+                                    message: "Invalid query!",
+                                })];
+                        }
+                        query = {};
+                        if (sol)
+                            query["sol"] = sol;
+                        if (earth_date)
+                            query["earth_date"] = earth_date;
+                        return [4 /*yield*/, manifests_model_1.default.findOne(query)
                                 .then(function (resAPI) {
-                                if (!resAPI)
-                                    return res.status(400).json({ message: 'Has no images that day :(' });
-                                var limit = 424;
-                                var total_pages = 0;
-                                if (resAPI.total_photos) {
-                                    total_pages = Math.ceil(resAPI.total_photos / limit);
+                                if (!resAPI) {
+                                    return res.status(400).json({ message: "Has no images that day :(" });
                                 }
-                                var cameras = resAPI.cameras, sol = resAPI.sol, total_photos = resAPI.total_photos;
+                                var limitPerPage = 424;
+                                var total_pages = 1;
+                                if (resAPI.total_photos) {
+                                    total_pages = Math.ceil(resAPI.total_photos / limitPerPage);
+                                }
+                                var cameras = resAPI.cameras, sol = resAPI.sol, total_photos = resAPI.total_photos, earth_date = resAPI.earth_date;
                                 return res.json({
                                     sol: sol,
+                                    earth_date: earth_date,
                                     cameras: cameras,
                                     total_photos: total_photos,
-                                    total_pages: total_pages
+                                    total_pages: total_pages,
                                 });
                             })
                                 .catch(function (error) { return res.json(error); })];
@@ -84,24 +120,4 @@ exports.default = {
             });
         });
     },
-    create: function (req, res) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _a, sol, earth_date, total_photos, cameras;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _a = req.body, sol = _a.sol, earth_date = _a.earth_date, total_photos = _a.total_photos, cameras = _a.cameras;
-                        return [4 /*yield*/, manifests_model_1.default.create({
-                                sol: sol,
-                                earth_date: earth_date,
-                                total_photos: total_photos,
-                                cameras: cameras
-                            })
-                                .then(function (resDB) { return res.json(resDB); })
-                                .catch(function (errorDB) { return res.json(errorDB); })];
-                    case 1: return [2 /*return*/, _b.sent()];
-                }
-            });
-        });
-    }
 };
