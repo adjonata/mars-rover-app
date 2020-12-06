@@ -14,4 +14,4 @@ const Photos = new Schema({
   src: String,
 });
 
-export default mongoose.model<IPhotos>("Manifests", Photos);
+export default mongoose.model<IPhotos>("Photos", Photos);
