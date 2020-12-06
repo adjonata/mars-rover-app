@@ -1,7 +1,9 @@
 import MarsApi from "../services/marsApi.service";
 import Manifests, { IManifest } from "../models/manifests.model";
+import Photos, { IPhotos } from "../models/photos.model";
 import { Request, Response } from "express";
 import { CallbackError } from "mongoose";
+import { parseISO, differenceInDays, max, min } from "date-fns";
 
 export interface ISyncManifests {
   timing: string;
@@ -9,9 +11,34 @@ export interface ISyncManifests {
   daysAdded?: Array<Date | string>;
 }
 
-export interface ISyncPhotos {
+export interface IPhotosQuery {
   minDate: string | Date;
   maxDate: string | Date;
+}
+
+export interface IPhotosResponse {
+  id: number;
+  sol: number;
+  camera: {
+    id: number;
+    name: string;
+    rover_id: number;
+    full_name: string;
+  };
+  img_src: string;
+  earth_date: string;
+  rover: {
+    id: number;
+    name: string;
+    landing_date: string;
+    launch_date: string;
+    status: string;
+  };
+}
+export interface IPhotosSuccess {
+  timing: string;
+  totalPhotos: number;
+  photosAdded: number[];
 }
 
 export default {
@@ -72,19 +99,119 @@ export default {
   },
 
   async sync_photos(req: Request, res: Response) {
-    let minDate: string = "";
-    let maxDate: string = "";
+    let { minDate, maxDate }: IPhotosQuery = req.body;
 
-    if ("minDate" in req.params) minDate = String(req.params.minDate);
-    if ("maxDate" in req.params) maxDate = String(req.params.maxDate);
+    if (!minDate || !maxDate) {
+      return res.status(400).json({ message: "Invalid period." });
+    }
 
-    let photosAdded: number = 0;
+    minDate = parseISO(String(minDate));
+    maxDate = parseISO(String(maxDate));
+
+    if (differenceInDays(maxDate, minDate) > 365) {
+      return res.status(400).json({
+        message: "The maximum period is 1 year.",
+      });
+    }
+
+    let totalPhotos: number = 0;
+    const photosAdded: number[] = [];
     let miliseconds: number = 0;
 
     const counter = setInterval(() => {
       miliseconds++;
     }, 100);
 
-    return await Manifests.find();
+    return await Manifests.find()
+      .where("earth_date")
+      .gt(minDate)
+      .lt(maxDate)
+      .then(async (resMan) => {
+        return new Promise((resolve, reject) => {
+          resMan.map(async (man) => {
+            await MarsApi.get("/rovers/curiosity/photos", {
+              params: {
+                sol: man.sol,
+              },
+            })
+              .then(async ({ data }) => {
+                const photos: IPhotosResponse[] = data.photos;
+
+                if (!photos || photos.length < 1) {
+                  return reject(
+                    res.status(400).json({
+                      message: "There are no photos in this period.",
+                    })
+                  );
+                }
+
+                for (let photo of photos) {
+                  await Photos.findOne({ id_base: photo.id })
+                    .then(async (resPhotos) => {
+                      if (!resPhotos) {
+                        const camera = photo.camera.name;
+                        const src: string = photo.img_src.split(
+                          "msl-raw-images/"
+                        )[1];
+
+                        const toCreate = {
+                          id_base: photo.id,
+                          earth_date: photo.earth_date,
+                          camera,
+                          src,
+                        };
+
+                        await Photos.create(toCreate)
+                          .then(() => {
+                            totalPhotos++;
+                            photosAdded.push(photo.id);
+                          })
+                          .catch((errorCreate) => {
+                            const messageSyc = `Error in creating imageId ${photo.id}.`;
+                            console.log(messageSyc);
+
+                            return reject(
+                              res.status(500).json({
+                                messageSyc,
+                                errorCreate,
+                              })
+                            );
+                          });
+                      } else {
+                        return;
+                      }
+                    })
+                    .catch((errorPhotos) => {
+                      console.log(errorPhotos);
+                      return reject(res.status(500).json(errorPhotos));
+                    });
+                }
+              })
+              .catch((errorMars) => {
+                const message = `Synchronization error: get sol ${man.sol}.`;
+                console.log(message);
+
+                return reject(
+                  res.status(500).json({
+                    message,
+                    errorMars,
+                  })
+                );
+              })
+              .finally(() => {
+                clearInterval(counter);
+
+                const success: IPhotosSuccess = {
+                  timing: `${miliseconds / 10} seconds`,
+                  totalPhotos,
+                  photosAdded,
+                };
+
+                return resolve(res.status(200).json(success));
+              });
+          });
+        });
+      })
+      .catch((errorMan) => res.status(500).json(errorMan));
   },
 };

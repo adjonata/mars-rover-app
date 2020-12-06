@@ -11,5 +11,5 @@ ManifestsRoutes.get('/', manifests_controller_1.default.getAllManifests);
 ManifestsRoutes.get('/date/:date', manifests_controller_1.default.findOneManifest);
 ManifestsRoutes.get('/sol/:sol', manifests_controller_1.default.findOneManifest);
 ManifestsRoutes.get('/cams', manifests_controller_1.default.findByCams);
-ManifestsRoutes.get('/sync', mars_integration_1.default.sync_manifests);
+ManifestsRoutes.post('/sync', mars_integration_1.default.sync_manifests);
 exports.default = ManifestsRoutes;
