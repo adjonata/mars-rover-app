@@ -3,13 +3,12 @@ const { Router } = require('express');
 const ManifestsRoutes = Router();
 
 import ManifestsController from "../controllers/manifests.controller";
-
 import MarsIntegration from "../fixtures/mars.integration";
 
-ManifestsRoutes.get('/', ManifestsController.index);
-ManifestsRoutes.get('/date/:date', ManifestsController.find);
-ManifestsRoutes.post('/', ManifestsController.create);
-
+ManifestsRoutes.get('/', ManifestsController.getAllManifests);
+ManifestsRoutes.get('/date/:date', ManifestsController.findOneManifest);
+ManifestsRoutes.get('/sol/:sol', ManifestsController.findOneManifest);
+ManifestsRoutes.get('/cams', ManifestsController.findByCams);
 
 ManifestsRoutes.get('/sync', MarsIntegration.sync_manifests);
 
