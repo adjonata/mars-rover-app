@@ -38,7 +38,7 @@ export interface IPhotosResponse {
 export interface IPhotosSuccess {
   timing: string;
   totalPhotos: number;
-  photosAdded: number[];
+  photosIds: number[];
 }
 
 export default {
@@ -115,7 +115,7 @@ export default {
     }
 
     let totalPhotos: number = 0;
-    const photosAdded: number[] = [];
+    const photosIds: number[] = [];
     let miliseconds: number = 0;
 
     const counter = setInterval(() => {
@@ -127,8 +127,8 @@ export default {
       .gt(minDate)
       .lt(maxDate)
       .then(async (resMan) => {
-        return new Promise((resolve, reject) => {
-          resMan.map(async (man) => {
+        return await new Promise(async (resolve, reject) => {
+          return await resMan.map(async (man) => {
             await MarsApi.get("/rovers/curiosity/photos", {
               params: {
                 sol: man.sol,
@@ -144,6 +144,8 @@ export default {
                     })
                   );
                 }
+
+                const photosToAdded: Array<Object> = [];
 
                 for (let photo of photos) {
                   await Photos.findOne({ id_base: photo.id })
@@ -161,22 +163,9 @@ export default {
                           src,
                         };
 
-                        await Photos.create(toCreate)
-                          .then(() => {
-                            totalPhotos++;
-                            photosAdded.push(photo.id);
-                          })
-                          .catch((errorCreate) => {
-                            const messageSyc = `Error in creating imageId ${photo.id}.`;
-                            console.log(messageSyc);
-
-                            return reject(
-                              res.status(500).json({
-                                messageSyc,
-                                errorCreate,
-                              })
-                            );
-                          });
+                        photosToAdded.push(toCreate);
+                        totalPhotos++;
+                        photosIds.push(photo.id);
                       } else {
                         return;
                       }
@@ -186,6 +175,26 @@ export default {
                       return reject(res.status(500).json(errorPhotos));
                     });
                 }
+                return await Photos.insertMany(photosToAdded)
+                  .then(() => {
+                    clearInterval(counter);
+
+                    const success: IPhotosSuccess = {
+                      timing: `${miliseconds / 10} seconds`,
+                      totalPhotos,
+                      photosIds,
+                    };
+
+                    return resolve(res.status(200).json(success));
+                  })
+                  .catch((errorCreate) => {
+                    return reject(
+                      res.status(500).json({
+                        message: "Synchronization error: create multiple",
+                        errorCreate,
+                      })
+                    );
+                  });
               })
               .catch((errorMars) => {
                 const message = `Synchronization error: get sol ${man.sol}.`;
@@ -197,17 +206,6 @@ export default {
                     errorMars,
                   })
                 );
-              })
-              .finally(() => {
-                clearInterval(counter);
-
-                const success: IPhotosSuccess = {
-                  timing: `${miliseconds / 10} seconds`,
-                  totalPhotos,
-                  photosAdded,
-                };
-
-                return resolve(res.status(200).json(success));
               });
           });
         });

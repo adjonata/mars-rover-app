@@ -36,7 +36,7 @@ export default {
 
           return photo;
         });
-        res.status(200).json(dataPrepare);
+        return res.status(200).json(dataPrepare);
       })
       .catch((errorPhotos) => res.status(500).json(errorPhotos));
   },
