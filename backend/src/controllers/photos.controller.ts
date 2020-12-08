@@ -1,5 +1,5 @@
 import Photos from "../models/photos.model";
-import { IPhotosQuery } from "../fixtures/mars.integration";
+import { IPhotosQuery } from "../fixtures/photos.integration";
 import { Request, Response } from "express";
 import { parseISO, differenceInMonths } from "date-fns";
 
@@ -36,7 +36,7 @@ export default {
 
           return photo;
         });
-        res.status(200).json(dataPrepare);
+        return res.status(200).json(dataPrepare);
       })
       .catch((errorPhotos) => res.status(500).json(errorPhotos));
   },

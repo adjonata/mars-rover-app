@@ -3,7 +3,7 @@ const { Router } = require('express');
 const ManifestsRoutes = Router();
 
 import ManifestsController from "../controllers/manifests.controller";
-import MarsIntegration from "../fixtures/mars.integration";
+import MarsIntegration from "../fixtures/mars.controller";
 
 ManifestsRoutes.get('/', ManifestsController.getAllManifests);
 ManifestsRoutes.get('/date/:date', ManifestsController.findOneManifest);
