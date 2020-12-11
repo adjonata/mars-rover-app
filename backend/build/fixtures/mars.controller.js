@@ -39,46 +39,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var photos_model_1 = __importDefault(require("../models/photos.model"));
-var date_fns_1 = require("date-fns");
+var manifests_integration_1 = __importDefault(require("./manifests.integration"));
+var photos_integration_1 = __importDefault(require("./photos.integration"));
 exports.default = {
-    getByPeriod: function (req, res) {
+    sync_manifests: function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, minDate, maxDate;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _a = req.body, minDate = _a.minDate, maxDate = _a.maxDate;
-                        if (!minDate || !maxDate) {
-                            return [2 /*return*/, res.status(400).json({ message: "Invalid period." })];
-                        }
-                        minDate = date_fns_1.parseISO(String(minDate));
-                        maxDate = date_fns_1.parseISO(String(maxDate));
-                        if (date_fns_1.differenceInMonths(maxDate, minDate) > 6) {
-                            return [2 /*return*/, res.status(400).json({
-                                    message: "The maximum period is 6 months.",
-                                })];
-                        }
-                        return [4 /*yield*/, photos_model_1.default.find()
-                                .where("earth_date")
-                                .gt(minDate)
-                                .lt(maxDate)
-                                .then(function (resPhotos) {
-                                if (!resPhotos || resPhotos.length < 1) {
-                                    return res.status(400).json({
-                                        message: "No photos in this period.",
-                                    });
-                                }
-                                var dataPrepare = resPhotos.map(function (photo) {
-                                    photo.src = "https://mars.nasa.gov/msl-raw-images/" + photo.src;
-                                    return photo;
-                                });
-                                return res.status(200).json(dataPrepare);
-                            })
-                                .catch(function (errorPhotos) { return res.status(500).json(errorPhotos); })];
-                    case 1: return [2 /*return*/, _b.sent()];
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, manifests_integration_1.default.manifestSync(req, res)];
+                    case 1: return [2 /*return*/, _a.sent()];
                 }
             });
         });
     },
+    sync_photos: function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, photos_integration_1.default.photosSync(req, res)];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    }
 };
