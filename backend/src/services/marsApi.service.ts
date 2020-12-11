@@ -5,7 +5,7 @@ const api = axios.create({
   params: {
     api_key: "9JzCItqyddRdjUAwltjVyL5YwQF5D2Y6WW8Xc9dP",
   },
-  timeout: 20000,
+  timeout: 150000,
 });
 
 export default api;
