@@ -4,9 +4,23 @@ import Photos from "../models/photos.model";
 import Manifests from "../models/manifests.model";
 import MarsApi from "../services/marsApi.service";
 
+export interface ICamsList {
+  cameras: Array<
+    | "FHAZ"
+    | "RHAZ"
+    | "MAST"
+    | "CHEMCAM"
+    | "MAHLI"
+    | "MARDI"
+    | "NAVCAM"
+    | "PANCAM"
+    | "MINITES"
+  >;
+}
 export interface IPhotosQuery {
   minDate: string | Date;
   maxDate: string | Date;
+  cams?: ICamsList[];
 }
 
 export interface IPhotosApiResponse {
@@ -32,15 +46,17 @@ export interface IPhotosApiResponse {
 export default {
   async photosSync(req: Request, res: Response) {
     let { minDate, maxDate }: IPhotosQuery = req.body;
-    const logSync = (message: any) => console.log("Photos Sync -", message);
+
+    const log = (message: any) => console.log("Photos Sync -", message);
+    const logBar = (min: Boolean = false) =>
+      console.log(min ? "-----" : "==============================");
 
     if (!minDate || !maxDate) {
       return res.status(400).json({ message: "Invalid period." });
     }
 
-    console.log("==============================");
-    logSync(`Checking from ${minDate} to ${maxDate}`);
-    console.log("==============================");
+    log(`Checking from ${minDate} to ${maxDate}`);
+    logBar();
 
     minDate = parseISO(String(minDate));
     maxDate = parseISO(String(maxDate));
@@ -59,7 +75,7 @@ export default {
 
     if (!manifestsRes || manifestsRes.length === 0) {
       const info = "There are no manifests in that period.";
-      logSync(info);
+      log(info);
       return res.json({
         message: info
       });
@@ -82,7 +98,7 @@ export default {
 
     if (solsToSync.length === 0) {
       const info = "All photos from this period have already been synced.";
-      logSync(info);
+      log(info);
       return res.status(201).json({
         message: info
       });
@@ -108,7 +124,7 @@ export default {
         index: i
       }));
 
-      logSync(`Checking ${photosIdsToVerify.length} photos`);
+      log(`Checking ${photosIdsToVerify.length} photos`);
 
       const photosFindInDb = await Photos.find()
         .where("id_base")
@@ -148,29 +164,29 @@ export default {
         if (total < 1) {
           continue;
         } else {
-          logSync(`Adding ${total} photos`);
+          log(`Adding ${total} photos`);
           await Photos.insertMany(photosToAdded).then(res => {
             added = [...added, ...idsAdded];
-            logSync(`${total} photos added`);
+            log(`${total} photos added`);
           });
         }
       } catch (err) {
         message = "Synchronization error!";
-        logSync(message.toUpperCase());
+        log(message.toUpperCase());
         extras = err;
         status = 500;
       }
       --missing;
-      console.log("-----");
-      logSync(`Missing ${missing} suns`);
-      console.log("-----");
+      logBar(true);
+      log(`Missing ${missing} suns`);
+      logBar(true);
       continue;
     }
 
-    console.log("==============================");
-    logSync(`${message}`);
-    logSync(`${added.length} photos added`);
-    logSync(`Extras: ${JSON.stringify(extras)}`);
+    logBar();
+    log(`${message}`);
+    log(`${added.length} photos added`);
+    log(`Extras: ${JSON.stringify(extras)}`);
 
     return res.status(status).json({
       message,

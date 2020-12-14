@@ -44,29 +44,50 @@ var date_fns_1 = require("date-fns");
 exports.default = {
     getByPeriod: function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, minDate, maxDate;
+            var _a, minDate, maxDate, cams, afterFirstDate, query;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _a = req.body, minDate = _a.minDate, maxDate = _a.maxDate;
+                        _a = req.body, minDate = _a.minDate, maxDate = _a.maxDate, cams = _a.cams;
                         if (!minDate || !maxDate) {
                             return [2 /*return*/, res.status(400).json({ message: "Invalid period." })];
                         }
                         minDate = date_fns_1.parseISO(String(minDate));
                         maxDate = date_fns_1.parseISO(String(maxDate));
-                        if (date_fns_1.differenceInMonths(maxDate, minDate) > 6) {
-                            return [2 /*return*/, res.status(400).json({
-                                    message: "The maximum period is 6 months.",
+                        if (date_fns_1.differenceInMonths(maxDate, minDate) > 2) {
+                            return [2 /*return*/, res.status(401).json({
+                                    message: "The maximum period is 2 months."
                                 })];
                         }
-                        return [4 /*yield*/, photos_model_1.default.find()
-                                .where("earth_date")
-                                .gt(minDate)
-                                .lt(maxDate)
+                        if (date_fns_1.differenceInDays(maxDate, minDate) < 1) {
+                            return [2 /*return*/, res.status(401).json({
+                                    message: "The minimum period is one day."
+                                })];
+                        }
+                        afterFirstDate = function (date) {
+                            return date_fns_1.differenceInDays(date, new Date(2012, 7, 6));
+                        };
+                        if (afterFirstDate(minDate) < 0 || afterFirstDate(maxDate) < 0) {
+                            return [2 /*return*/, res.status(401).json({
+                                    message: "The start date is 2020-08-06."
+                                })];
+                        }
+                        query = {
+                            earth_date: {
+                                $gte: minDate,
+                                $lte: maxDate
+                            }
+                        };
+                        if (cams && cams.length > 0) {
+                            query["camera"] = {
+                                $in: cams
+                            };
+                        }
+                        return [4 /*yield*/, photos_model_1.default.find(query)
                                 .then(function (resPhotos) {
                                 if (!resPhotos || resPhotos.length < 1) {
-                                    return res.status(400).json({
-                                        message: "No photos in this period.",
+                                    return res.status(404).json({
+                                        message: "No photos in this period."
                                     });
                                 }
                                 var dataPrepare = resPhotos.map(function (photo) {
@@ -80,5 +101,5 @@ exports.default = {
                 }
             });
         });
-    },
+    }
 };
