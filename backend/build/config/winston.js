@@ -1,5 +1,5 @@
+"use strict";
 // import * as winston from "winston";
-
 // const options = {
 //   file: {
 //     level: 'info',
@@ -17,7 +17,6 @@
 //     colorize: true,
 //   },
 // };
-
 // const logger = new winston.Logger({
 //   transports: [
 //     new winston.transports.File(options.file),
@@ -25,11 +24,9 @@
 //   ],
 //   exitOnError: false,
 // });
-
 // logger.stream = {
 //   write: function(message, encoding) {
 //     logger.info(message);
 //   },
 // };
-
 // export default logger;
