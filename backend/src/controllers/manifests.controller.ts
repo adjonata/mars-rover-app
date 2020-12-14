@@ -1,20 +1,7 @@
 import Manifests, { IManifest } from "../models/manifests.model";
+import { ICamsList } from "../fixtures/photos.integration";
 import { Request, Response } from "express";
 import { CallbackError } from "mongoose";
-
-export interface ICamsList {
-  cameras: Array<
-    | "FHAZ"
-    | "RHAZ"
-    | "MAST"
-    | "CHEMCAM"
-    | "MAHLI"
-    | "MARDI"
-    | "NAVCAM"
-    | "PANCAM"
-    | "MINITES"
-  >;
-}
 
 export default {
   async getAllManifests(req: Request, res: Response) {
