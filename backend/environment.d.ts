@@ -1,3 +1,5 @@
+import winston from "winston";
+
 declare global {
   namespace NodeJS {
     interface ProcessEnv {
@@ -7,5 +9,8 @@ declare global {
     }
   }
 }
+
+declare const winston: winston.Winston;
+export = winston;
 
 export {}
