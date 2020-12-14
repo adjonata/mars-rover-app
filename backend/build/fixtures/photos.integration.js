@@ -53,18 +53,21 @@ var marsApi_service_1 = __importDefault(require("../services/marsApi.service"));
 exports.default = {
     photosSync: function (req, res) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, minDate, maxDate, logSync, manifestsRes, info, solsToSync, _loop_1, _i, manifestsRes_1, manifest, info, added, message, status, extras, missing, _loop_2, _b, solsToSync_1, sol;
+            var _a, minDate, maxDate, log, logBar, manifestsRes, info, solsToSync, _loop_1, _i, manifestsRes_1, manifest, info, added, message, status, extras, missing, _loop_2, _b, solsToSync_1, sol;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
                         _a = req.body, minDate = _a.minDate, maxDate = _a.maxDate;
-                        logSync = function (message) { return console.log("Photos Sync -", message); };
+                        log = function (message) { return console.log("Photos Sync -", message); };
+                        logBar = function (min) {
+                            if (min === void 0) { min = false; }
+                            return console.log(min ? "-----" : "==============================");
+                        };
                         if (!minDate || !maxDate) {
                             return [2 /*return*/, res.status(400).json({ message: "Invalid period." })];
                         }
-                        console.log("==============================");
-                        logSync("Checking from " + minDate + " to " + maxDate);
-                        console.log("==============================");
+                        log("Checking from " + minDate + " to " + maxDate);
+                        logBar();
                         minDate = date_fns_1.parseISO(String(minDate));
                         maxDate = date_fns_1.parseISO(String(maxDate));
                         if (date_fns_1.differenceInDays(maxDate, minDate) > 365) {
@@ -81,7 +84,7 @@ exports.default = {
                         manifestsRes = _c.sent();
                         if (!manifestsRes || manifestsRes.length === 0) {
                             info = "There are no manifests in that period.";
-                            logSync(info);
+                            log(info);
                             return [2 /*return*/, res.json({
                                     message: info
                                 })];
@@ -118,7 +121,7 @@ exports.default = {
                     case 5:
                         if (solsToSync.length === 0) {
                             info = "All photos from this period have already been synced.";
-                            logSync(info);
+                            log(info);
                             return [2 /*return*/, res.status(201).json({
                                     message: info
                                 })];
@@ -144,7 +147,7 @@ exports.default = {
                                             id_base: photo.id,
                                             index: i
                                         }); });
-                                        logSync("Checking " + photosIdsToVerify.length + " photos");
+                                        log("Checking " + photosIdsToVerify.length + " photos");
                                         return [4 /*yield*/, photos_model_1.default.find()
                                                 .where("id_base")
                                                 .in(photosIdsToVerify.map(function (p) { return p.id_base; }))
@@ -182,10 +185,10 @@ exports.default = {
                                         if (!(total_1 < 1)) return [3 /*break*/, 4];
                                         return [2 /*return*/, "continue"];
                                     case 4:
-                                        logSync("Adding " + total_1 + " photos");
+                                        log("Adding " + total_1 + " photos");
                                         return [4 /*yield*/, photos_model_1.default.insertMany(photosToAdded).then(function (res) {
                                                 added = __spreadArrays(added, idsAdded);
-                                                logSync(total_1 + " photos added");
+                                                log(total_1 + " photos added");
                                             })];
                                     case 5:
                                         _a.sent();
@@ -194,15 +197,15 @@ exports.default = {
                                     case 7:
                                         err_1 = _a.sent();
                                         message = "Synchronization error!";
-                                        logSync(message.toUpperCase());
+                                        log(message.toUpperCase());
                                         extras = err_1;
                                         status = 500;
                                         return [3 /*break*/, 8];
                                     case 8:
                                         --missing;
-                                        console.log("-----");
-                                        logSync("Missing " + missing + " suns");
-                                        console.log("-----");
+                                        logBar(true);
+                                        log("Missing " + missing + " suns");
+                                        logBar(true);
                                         return [2 /*return*/, "continue"];
                                 }
                             });
@@ -220,10 +223,10 @@ exports.default = {
                         _b++;
                         return [3 /*break*/, 6];
                     case 9:
-                        console.log("==============================");
-                        logSync("" + message);
-                        logSync(added.length + " photos added");
-                        logSync("Extras: " + JSON.stringify(extras));
+                        logBar();
+                        log("" + message);
+                        log(added.length + " photos added");
+                        log("Extras: " + JSON.stringify(extras));
                         return [2 /*return*/, res.status(status).json({
                                 message: message,
                                 totalAdded: added.length,
