@@ -5,7 +5,7 @@ import { parseISO, differenceInMonths, differenceInDays } from "date-fns";
 
 export default {
   async getByPeriod(req: Request, res: Response) {
-    let { minDate, maxDate, cams }: IPhotosQuery = req.body;
+    let { minDate, maxDate, cameras }: IPhotosQuery = req.body;
 
     if (!minDate || !maxDate) {
       return res.status(400).json({ message: "Invalid period." });
@@ -45,9 +45,9 @@ export default {
       }
     };
 
-    if (cams && cams.length > 0) {
+    if (cameras && cameras.length > 0) {
       query["camera"] = {
-        $in: cams
+        $in: cameras
       };
     }
 
