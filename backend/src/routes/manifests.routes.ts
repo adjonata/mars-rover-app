@@ -6,24 +6,11 @@ const ManifestsRoutes = Router();
 
 import ManifestsController from "../controllers/manifests.controller";
 import MarsIntegration from "../fixtures/mars.controller";
-import validation from "../validation/manifests.valid";
 
 ManifestsRoutes.get("/", ManifestsController.getAllManifests);
-ManifestsRoutes.get(
-  "/date/:date",
-  validation.findOneManifest,
-  ManifestsController.findOneManifest
-);
-ManifestsRoutes.get(
-  "/sol/:sol",
-  validation.findOneManifest,
-  ManifestsController.findOneManifest
-);
-ManifestsRoutes.get(
-  "/cams",
-  validation.findByCams,
-  ManifestsController.findByCams
-);
+ManifestsRoutes.get("/date/:date", ManifestsController.findOneManifest);
+ManifestsRoutes.get("/sol/:sol", ManifestsController.findOneManifest);
+ManifestsRoutes.get("/cams", ManifestsController.findByCams);
 
 ManifestsRoutes.post("/sync", verifyJWT, MarsIntegration.sync_manifests);
 
