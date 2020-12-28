@@ -20,7 +20,7 @@ export interface ICamsList {
 export interface IPhotosQuery {
   minDate: string | Date;
   maxDate: string | Date;
-  cams?: ICamsList[];
+  cameras?: ICamsList[];
 }
 
 export interface IPhotosApiResponse {
