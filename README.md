@@ -200,14 +200,16 @@ const reqBody = {
   cameras: ["MAST"];
 };
 ```
+
 Exemplo de response
+
 ```json
 {
-    "_id": "5fe9e387cf6b7685ea73f375", // ID no MongoDB
-    "id_base": 782823, // ID vinda da api da nasa
-    "earth_date": "2020-12-12T00:00:00.000Z", // Timestamp do dia na Terra
-    "camera": "MAST", // Câmera pela qual foi capturada a imagem
-    "src": "https://mars.nasa.gov/msl-raw-images/...", // Url da imagem
+    "_id": "5fe9e387cf6b7685ea73f375",
+    "id_base": 782823,
+    "earth_date": "2020-12-12T00:00:00.000Z",
+    "camera": "MAST",
+    "src": "https://mars.nasa.gov/msl-raw-images/...",
 },
 ```
 
