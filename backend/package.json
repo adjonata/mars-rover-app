@@ -5,8 +5,7 @@
   "main": "src/server.js",
   "scripts": {
     "test": "test",
-    "start:dev": "nodemon",
-    "start:prod": "node build/server.js",
+    "start": "nodemon",
     "build": "rimraf ./build && tsc"
   },
   "author": "Alex Djonata <alex.code.js@gmail.com>",
