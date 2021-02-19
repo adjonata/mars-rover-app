@@ -29,9 +29,7 @@ export function noLogged(req: IAllowed, res: Response, next: NextFunction) {
 
   jwt.verify(String(token), String(process.env.SECRET), (err, decoded) => {
     if (err) {
-      return res
-        .status(500)
-        .json({ auth: false, message: "Failed to authenticate token." });
+      return next();
     }
 
     return res.status(200).json({
