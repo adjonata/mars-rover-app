@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import MarsApi from "../services/marsApi.service";
-import Manifests, { IManifest } from "../models/manifests.model";
+import MarsApi from "@services/marsApi.service";
+import Manifests, { IManifest } from "@models/manifests.model";
 import { CallbackError } from "mongoose";
 
 export interface ISyncManifests {

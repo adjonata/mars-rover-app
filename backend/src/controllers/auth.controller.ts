@@ -1,6 +1,6 @@
-import Auth, { IAuthLogin, IAuth } from "../models/auth.model";
+import Auth, { IAuthLogin, IAuth } from "@models/auth.model";
 import { Request, Response } from "express";
-import * as crypt from "../utils/crypt";
+import * as crypt from "@utils/crypt";
 import jwt from "jsonwebtoken";
 
 export default {

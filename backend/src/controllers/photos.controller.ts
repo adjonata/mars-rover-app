@@ -1,5 +1,5 @@
-import Photos from "../models/photos.model";
-import { IPhotosQuery } from "../fixtures/photos.integration";
+import Photos from "@models/photos.model";
+import { IPhotosQuery } from "@fixtures/photos.integration";
 import { Request, Response } from "express";
 import { parseISO, differenceInMonths, differenceInDays } from "date-fns";
 

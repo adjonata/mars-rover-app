@@ -1,5 +1,5 @@
-import Manifests, { IManifest } from "../models/manifests.model";
-import { ICamsList } from "../fixtures/photos.integration";
+import Manifests, { IManifest } from "@models/manifests.model";
+import { ICamsList } from "@fixtures/photos.integration";
 import { Request, Response } from "express";
 import { CallbackError } from "mongoose";
 

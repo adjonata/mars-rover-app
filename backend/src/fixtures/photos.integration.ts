@@ -1,8 +1,8 @@
 import { parseISO, differenceInDays } from "date-fns";
 import { Request, Response } from "express";
-import Photos from "../models/photos.model";
-import Manifests from "../models/manifests.model";
-import MarsApi from "../services/marsApi.service";
+import Photos from "@models/photos.model";
+import Manifests from "@models/manifests.model";
+import MarsApi from "@services/marsApi.service";
 
 export interface ICamsList {
   cameras: Array<

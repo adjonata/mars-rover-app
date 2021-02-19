@@ -1,12 +1,12 @@
 import { Router } from "express";
 
-import { verifyJWT } from "../middlewares/auth";
+import { verifyJWT } from "@middlewares/auth";
 
 const ManifestsRoutes = Router();
 
-import ManifestsController from "../controllers/manifests.controller";
-import MarsIntegration from "../fixtures/mars.controller";
-import validation from "../validation/manifests.valid";
+import ManifestsController from "@controllers/manifests.controller";
+import MarsIntegration from "@fixtures/mars.controller";
+import validation from "@validation/manifests.valid";
 
 ManifestsRoutes.get("/", ManifestsController.getAllManifests);
 ManifestsRoutes.get(
