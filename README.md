@@ -7,8 +7,7 @@
 </h2>
 
 <p align="center">
-  <a href="#api-em-node.js">Api em Node.js</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-  <a href="#frontend" style="color: #707070;">Frontend em Vue</a>&nbsp;&nbsp;&nbsp;
+  <a href="#api-em-node.js">Api em Node.js</a>
 </p>
 
 <br>
@@ -38,7 +37,7 @@
 ### 🔧 Instalação
 
 1. Certifique primeiramente de que possui o Node e o Npm instalado em seu computador.
-2. Acesse a pasta `/backend` e rode o comando `npm install`
+2. Clone o projeto em sua máquina utilizando o e rode o comando `npm install`
 3. Instale o typescript e o ts-node globalmente: `npm install -g ts-node typescript`
 4. Na raiz crie um arquivo com o nome de `.env` e cole o conteúdo do arquivo `.env.example`
 5. Para a variável de ambiente `CONNECTION` insira uma conexão com um banco de dados [mongodb](https://www.mongodb.com/2)
