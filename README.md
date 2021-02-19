@@ -2,17 +2,10 @@
     <img alt="Anota Tudo" title="Anota Tudo!" src=".github/icon.png" width="250px" />
 </h1>
 
-<h2 align="center">
+<h1 align="center">
   Mars Rover App
-</h2>
+</h1>
 
-<p align="center">
-  <a href="#api-em-node.js">Api em Node.js</a>
-</p>
-
-<br>
-
----
 
 ## Api em Node.js
 
