@@ -5,6 +5,7 @@ declare global {
       CONNECTION: string;
       NODE_ENV: "production" | "development";
       SECRET: string;
+      NASA_API_KEY: string;
     }
   }
 }
