@@ -1,12 +1,13 @@
-import Manifests, { IManifest } from "@models/manifests.model";
-import { ICamsList } from "@fixtures/photos.integration";
+import Manifests from "@/models/manifests.model";
+import PhotosManifest from "@/types/PhotosManifest";
+import { ICamsList } from "@/fixtures/photos.integration";
 import { Request, Response } from "express";
 import { CallbackError } from "mongoose";
 
 export default {
-  async getAllManifests(req: Request, res: Response) {
+  async getAllRoverManifests(req: Request, res: Response) {
     return await Manifests.find()
-      .then((resAPI) => {
+      .then(resAPI => {
         return res.status(200).json(resAPI);
       })
       .catch((errorAPI: CallbackError) => {
@@ -19,13 +20,13 @@ export default {
 
     if (!cameras || cameras.length < 1) {
       return res.status(400).json({
-        message: "No cameras chosen",
+        message: "No cameras chosen"
       });
     }
 
     return await Manifests.find({ cameras: { $all: cameras } })
-      .then((resMan) => res.status(200).json(resMan))
-      .catch((errorMan) => res.status(400).json({ errorMan }));
+      .then(resMan => res.status(200).json(resMan))
+      .catch(errorMan => res.status(400).json({ errorMan }));
   },
 
   async findOneManifest(req: Request, res: Response) {
@@ -34,7 +35,7 @@ export default {
 
     if (!earth_date && !sol) {
       return res.status(401).json({
-        message: "Invalid query!",
+        message: "Invalid query!"
       });
     }
 
@@ -47,7 +48,7 @@ export default {
     if (earth_date) query["earth_date"] = earth_date;
 
     return await Manifests.findOne(query)
-      .then((resAPI) => {
+      .then(resAPI => {
         if (!resAPI) {
           return res.status(400).json({ message: "Has no images that day :(" });
         }
@@ -59,16 +60,21 @@ export default {
           total_pages = Math.ceil(resAPI.total_photos / limitPerPage);
         }
 
-        const { cameras, sol, total_photos, earth_date }: IManifest = resAPI;
+        const {
+          cameras,
+          sol,
+          total_photos,
+          earth_date
+        }: PhotosManifest = resAPI;
 
         return res.json({
           sol,
           earth_date,
           cameras,
           total_photos,
-          total_pages,
+          total_pages
         });
       })
       .catch((error: CallbackError) => res.json(error));
-  },
+  }
 };

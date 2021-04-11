@@ -1,12 +1,12 @@
 import * as dotenv from "dotenv";
-dotenv.config({ path: __dirname+'/../.env' });
+dotenv.config({ path: __dirname + "/../.env" });
 
 import app from "./app";
 import mongoose, { CallbackError } from "mongoose";
 
-let port: number = 3333;
+let port: number = 8080;
 
-if(process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === "production") {
   port = parseInt(`${process.env.PRODUCTION_PORT}`);
 }
 
