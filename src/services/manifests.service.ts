@@ -1,8 +1,10 @@
 import MarsApi from "./marsApi.service";
-import { ManifestsResponse } from "@types";
+import Manifest from "@/types/Manifest";
 
 export default {
-  getAllManifests(): Promise<ManifestsResponse> {
-    return MarsApi.get("/manifests/curiosity");
+  getCuriosityManifests(): Promise<Manifest> {
+    return MarsApi.get<Manifest>("/manifests/curiosity").then(
+      manifests => manifests.data
+    );
   }
 };
