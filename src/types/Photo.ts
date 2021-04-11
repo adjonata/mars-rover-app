@@ -1,10 +1,14 @@
-import Cameras from "./Cameras";
-
-type Photo = {
+import Rover from "./Rover";
+import { CameraDetails } from "./RoversCameras";
+export default interface Photo {
+  id: number;
   sol: number;
+  camera: CameraDetails;
+  img_src: string;
   earth_date: string;
-  total_photos: number;
-  cameras: Cameras[];
-};
+  rover: Rover;
+}
 
-export default Photo;
+export type PhotoRaw = {
+  photos: Photo[];
+};

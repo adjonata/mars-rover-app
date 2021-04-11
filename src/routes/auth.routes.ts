@@ -2,10 +2,10 @@ import { Router } from "express";
 
 const AuthRoutes = Router();
 
-import { noLogged } from "@middlewares/auth";
+import { noLogged } from "@/middlewares/auth";
 
-import AuthController from "@controllers/auth.controller";
-import validation from "@validation/auth.valid";
+import AuthController from "@/controllers/auth.controller";
+import validation from "@/validation/auth.valid";
 
 AuthRoutes.post(
   "/register",
