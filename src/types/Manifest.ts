@@ -1,6 +1,6 @@
-import Photo from "./Photo";
+import PhotosManifest from "./PhotosManifest";
 
-interface ManifestsResponse {
+export default interface Manifest {
   photo_manifest: {
     name: string;
     landing_date: string;
@@ -9,8 +9,6 @@ interface ManifestsResponse {
     max_sol: number;
     max_date: string;
     total_photos: number;
-    photos: Photo[];
+    photos: PhotosManifest[];
   };
 }
-
-export default ManifestsResponse;

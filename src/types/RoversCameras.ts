@@ -46,3 +46,10 @@ export const enum PerseveranceCameras {
   REAR_HAZCAM_LEFT = "REAR_HAZCAM_LEFT",
   REAR_HAZCAM_RIGHT = "REAR_HAZCAM_RIGHT"
 }
+
+export type CameraDetails = {
+  id: number;
+  name: string;
+  rover_id: number;
+  full_name: string;
+};
