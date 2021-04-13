@@ -1,11 +1,10 @@
 import Photos from "@/models/photos.model";
-import { IPhotosQuery } from "@/fixtures/photos.integration";
 import { Request, Response } from "express";
 import { parseISO, differenceInMonths, differenceInDays } from "date-fns";
 
 export default {
   async getByPeriod(req: Request, res: Response) {
-    let { minDate, maxDate, cameras }: IPhotosQuery = req.body;
+    let { minDate, maxDate, cameras } = req.body;
 
     if (!minDate || !maxDate) {
       return res.status(400).json({ message: "Invalid period." });

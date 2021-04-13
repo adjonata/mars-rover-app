@@ -1,6 +1,5 @@
 import Manifests from "@/models/manifests.model";
 import PhotosManifest from "@/types/PhotosManifest";
-import { ICamsList } from "@/fixtures/photos.integration";
 import { Request, Response } from "express";
 import { CallbackError } from "mongoose";
 
@@ -16,7 +15,7 @@ export default {
   },
 
   async findByCams(req: Request, res: Response) {
-    const { cameras }: ICamsList = req.body;
+    const { cameras } = req.body;
 
     if (!cameras || cameras.length < 1) {
       return res.status(400).json({
