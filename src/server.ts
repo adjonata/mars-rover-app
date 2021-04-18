@@ -1,14 +1,10 @@
 import * as dotenv from "dotenv";
 dotenv.config({ path: __dirname + "/../.env" });
 
+import mongoose from "mongoose";
 import app from "./app";
-import mongoose, { CallbackError } from "mongoose";
 
-let port: number = 8080;
-
-if (process.env.NODE_ENV === "production") {
-  port = parseInt(`${process.env.PRODUCTION_PORT}`);
-}
+let port = 8080;
 
 mongoose.set("useCreateIndex", true);
 
@@ -22,6 +18,7 @@ mongoose
       console.log(`Application running on port ${port}`);
     });
   })
-  .catch((error: CallbackError) => {
-    console.log(error);
+  .catch(error => {
+    console.log("Mongoose error");
+    console.error(error);
   });
