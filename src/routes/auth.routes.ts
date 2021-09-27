@@ -2,13 +2,14 @@ import { Router } from "express";
 
 const AuthRoutes = Router();
 
-import { noLogged } from "@/middlewares/auth";
+import { noLogged, registrationEnabled } from "@/middlewares/auth";
 
-import AuthController from "@/controllers/auth.controller";
+import AuthController from "@/controllers/auth/auth.controller";
 import validation from "@/validation/auth.valid";
 
 AuthRoutes.post(
   "/register",
+  registrationEnabled,
   noLogged,
   validation.register,
   AuthController.register

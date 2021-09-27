@@ -1,4 +1,4 @@
-import Auth, { IAuthLogin, IAuth } from "@/models/auth.model";
+import Auth from "@/models/auth.model";
 import { Request, Response } from "express";
 import * as crypt from "@/utils/crypt";
 import jwt from "jsonwebtoken";
@@ -9,6 +9,7 @@ interface LoginRequest extends Request {
     email: string;
   };
 }
+
 interface RegisterRequest extends Request {
   body: {
     email: string;

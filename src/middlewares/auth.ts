@@ -12,7 +12,7 @@ export function verifyJWT(req: IAllowed, res: Response, next: NextFunction) {
 
   jwt.verify(String(token), String(process.env.SECRET), (err, decoded) => {
     if (err) {
-      return res.status(500).json({ message: "Failed to authenticate token." });
+      return res.status(401).json({ message: "Failed to authenticate token." });
     }
 
     if (decoded) {
@@ -36,4 +36,20 @@ export function noLogged(req: IAllowed, res: Response, next: NextFunction) {
       message: "Already logged in."
     });
   });
+}
+
+export function registrationEnabled(
+  req: IAllowed,
+  res: Response,
+  next: NextFunction
+) {
+  const registrationEnv = Boolean(process.env.ENABLE_REGISTRATION);
+
+  if (registrationEnv) {
+    return next();
+  } else {
+    return res.status(400).json({
+      message: "Registration off."
+    });
+  }
 }

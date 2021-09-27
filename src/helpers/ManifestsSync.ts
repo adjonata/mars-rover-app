@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Timer, { ITimer } from "@/utils/timer";
 import ManifestsModel from "@/models/manifests.model";
 import ManifestsService from "@/services/manifests.service";
+import AuthModel from "@/models/auth.model";
 
 import PhotosManifest from "@/types/PhotosManifest";
 
@@ -26,17 +27,27 @@ export default class ManifestsSync implements IManifestsSync {
       const manifestsAtTheBase = await this.getManifestsAtTheBase();
       const listOfSavedSols = await this.fetchTheListOfSavedSols();
 
+      const manifestsToSave: PhotosManifest[] = [];
+
       for (let photoManifest of manifestsAtTheBase) {
         if (listOfSavedSols.includes(photoManifest.sol)) continue;
         else {
-          try {
-            await this.saveManifest(photoManifest);
-            this.registerManifestAdded(photoManifest.earth_date);
-          } catch (error) {
-            return response.status(500);
-          }
+          manifestsToSave.push(photoManifest);
+          this.registerManifestAdded(photoManifest.earth_date);
         }
       }
+
+      if (!manifestsToSave.length) {
+        return response
+          .status(200)
+          .json(
+            this.createSuccessfulResponse(
+              "All manifests have already been synchronized."
+            )
+          );
+      }
+
+      await this.saveAllManifests(manifestsToSave);
 
       this.timer?.break();
 
@@ -48,9 +59,9 @@ export default class ManifestsSync implements IManifestsSync {
     }
   }
 
-  createSuccessfulResponse() {
+  createSuccessfulResponse(message?: string) {
     return {
-      message: "Synchronization success",
+      message: message || "Synchronization success",
       syncSeconds: this.timer?.getSeconds() || 1,
       syncMilliSeconds: this.timer?.getMilliSeconds() || 1,
       totalAdded: this.totalAdded,
@@ -64,8 +75,8 @@ export default class ManifestsSync implements IManifestsSync {
     console.log("Manifests added:", earth_date);
   }
 
-  async saveManifest(manifest: PhotosManifest) {
-    return await ManifestsModel.create(manifest);
+  async saveAllManifests(manifests: PhotosManifest[]) {
+    return await ManifestsModel.insertMany(manifests);
   }
 
   async fetchTheListOfSavedSols(): Promise<number[]> {
@@ -73,8 +84,8 @@ export default class ManifestsSync implements IManifestsSync {
     return listOfSavedSols.map(saved => saved.sol);
   }
 
-  async getManifestsAtTheBase() {
-    return await ManifestsService.getCuriosityManifests()
+  async getManifestsAtTheBase(): Promise<PhotosManifest[]> {
+    return await ManifestsService.getRoverManifests()
       .then(manifests => manifests.photo_manifest.photos)
       .catch(error => error);
   }

@@ -135,18 +135,32 @@ export default class PhotosSync implements IPhotosSync {
   async findNotFoundPhotosBySun(sols: number[]) {
     const photosNotFound: Photo[] = [];
 
-    for (let sol of sols) {
+    for (const sol of sols) {
       await PhotosService.queryBySol(sol).then(async photos => {
+        let totalPhotosInSol = 0;
+
         for (const photo of photos) {
           const foundInDatabase = await PhotosModel.findOne({
             id_base: photo.id
           });
           if (!foundInDatabase) {
+            totalPhotosInSol++;
             photosNotFound.push(photo);
           }
         }
+
+        console.log(
+          "Sol",
+          sol + "/" + sols.length,
+          "-",
+          totalPhotosInSol,
+          `photos to be synchronized`
+        );
       });
     }
+
+    console.log("================");
+    console.log(photosNotFound.length, "PHOTOS ARE GOING TO BE ADDED");
 
     return photosNotFound;
   }
@@ -158,22 +172,21 @@ export default class PhotosSync implements IPhotosSync {
     }
 
     await PhotosModel.insertMany(photosToSave).then(() => {
-      console.log(photosToSave.length, "fotos adicionadas");
       this.totalPhotosAdded = photosToSave.length;
     });
   }
 
   makePhotoToLocalDatabase(photo: Photo) {
-    const { id, camera, earth_date, sol, img_src } = photo;
+    const { id, camera, earth_date, sol, img_src: src } = photo;
 
-    const splitedImgSrc = img_src.split("msl-raw-images/")[1];
+    const splittedSrc = src.split("nasa.gov/")[1];
 
     return {
       id_base: id,
       camera: camera.name,
       earth_date,
       sol,
-      src: splitedImgSrc
+      src: splittedSrc
     } as IPhotos;
   }
 }
