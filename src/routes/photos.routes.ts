@@ -8,7 +8,7 @@ import validation from "@/validation/photos.valid";
 
 const PhotosRoutes = Router();
 
-PhotosRoutes.get(
+PhotosRoutes.post(
   "/period",
   validation.getByPeriod,
   PhotosController.getByPeriod
