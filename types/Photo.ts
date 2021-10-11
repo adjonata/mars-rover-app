@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 import { Rover } from './Rover'
 import { CameraDetails } from './RoversCameras'
 

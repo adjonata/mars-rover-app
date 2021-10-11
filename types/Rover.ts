@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 export interface Rover {
   id: number
   name: string
