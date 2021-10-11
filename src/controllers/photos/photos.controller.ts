@@ -11,8 +11,9 @@ interface IGetByPeriodRequest extends Request {
 }
 
 interface IGetBySolRequest extends Request {
-  params: {
+  body: {
     sol: string;
+    camera?: string;
   };
 }
 
@@ -68,9 +69,20 @@ export default {
   },
 
   async getBySol(req: IGetBySolRequest, res: Response) {
-    const sol = parseInt(req.params.sol);
+    const sol = parseInt(req.body.sol);
 
-    const photos = await Photos.find({ sol }).then((docs) => {
+    const query: {
+      sol: number;
+      camera?: string;
+    } = {
+      sol
+    };
+
+    if (req.body.camera) {
+      query["camera"] = req.body.camera;
+    }
+
+    const photos = await Photos.find(query).then((docs) => {
       return docs.map((doc) => {
         doc.src = "https://mars.nasa.gov/" + doc.src;
         return doc;

@@ -14,11 +14,7 @@ PhotosRoutes.post(
   PhotosController.getByPeriod
 );
 
-PhotosRoutes.get(
-  "/sol/:sol",
-  validation.getBySol,
-  PhotosController.getBySol
-);
+PhotosRoutes.post("/sol", validation.getBySol, PhotosController.getBySol);
 
 PhotosRoutes.post(
   "/sync",

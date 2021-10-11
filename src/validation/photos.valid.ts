@@ -9,14 +9,15 @@ export default {
     })
   }),
   getBySol: celebrate({
-    [Segments.PARAMS]: Joi.object().keys({
+    [Segments.BODY]: Joi.object().keys({
       sol: Joi.number().required(),
+      camera: Joi.string().optional()
     })
   }),
   photosSync: celebrate({
     [Segments.BODY]: Joi.object().keys({
       minDate: Joi.string().min(10).max(20).required(),
-      maxDate: Joi.string().min(10).max(20).required(),
+      maxDate: Joi.string().min(10).max(20).required()
     })
   })
 };
