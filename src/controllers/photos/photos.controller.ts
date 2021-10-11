@@ -10,6 +10,12 @@ interface IGetByPeriodRequest extends Request {
   };
 }
 
+interface IGetBySolRequest extends Request {
+  params: {
+    sol: string;
+  };
+}
+
 export default {
   async getByPeriod(req: IGetByPeriodRequest, res: Response) {
     let { minDate, maxDate, cameras } = req.body;
@@ -48,8 +54,8 @@ export default {
       };
     }
 
-    const photos = await Photos.find(query).then(response => {
-      return response.map(photo => {
+    const photos = await Photos.find(query).then((response) => {
+      return response.map((photo) => {
         photo.src = "https://mars.nasa.gov/" + photo.src;
         return photo;
       });
@@ -59,5 +65,13 @@ export default {
       .set("Total-Photos", String(photos.length))
       .status(200)
       .json(photos);
+  },
+
+  async getBySol(req: IGetBySolRequest, res: Response) {
+    const sol = parseInt(req.params.sol);
+
+    const photo = await Photos.findOne({ sol });
+
+    return res.status(200).json(photo);
   }
 };
