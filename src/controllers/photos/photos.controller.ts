@@ -70,8 +70,13 @@ export default {
   async getBySol(req: IGetBySolRequest, res: Response) {
     const sol = parseInt(req.params.sol);
 
-    const photo = await Photos.findOne({ sol });
+    const photos = await Photos.find({ sol }).then((docs) => {
+      return docs.map((doc) => {
+        doc.src = "https://mars.nasa.gov/" + doc.src;
+        return doc;
+      });
+    });
 
-    return res.status(200).json(photo);
+    return res.status(200).json(photos);
   }
 };
